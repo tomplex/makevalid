@@ -1,0 +1,12 @@
+.deps
+cmake-build-debug
+data/
+src/.deps
+_Makefile
+CMakeLists.txt
+compile
+depcomp
+missing
+.idea/
+install-sh
+aclocal.m4
