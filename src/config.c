@@ -1,11 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "config.h"
 
 void print_help(int exit_code) {
-    printf("Help!\n");
+    char *usage =
+        "Usage: makevalid [OPTIONS] INPUT_FILE\n\n"
+        "Read INPUT_FILE and load WKT geometries, and fix any which are invalid. \n"
+        "By default, output is written to stdout and only changed geometries are written.\n\n"
+        "Options:\n"
+        "\t-o\tspecify output file.\n"
+        "\t-a\toutput all geometries, not just those which have been fixed.\n";
+    printf("%s", usage);
     exit(exit_code);
 }
 
@@ -26,18 +34,26 @@ MakeValidConfig *parse_arguments(int argc, char *argv[]) {
         print_help(SUCCESS);
     }
 
-    config->read_filename = argv[1];
+    // default options
+    config->read_filename = argv[argc-1];
     config->read_fileobj = fopen(config->read_filename, "r");
+    config->write_filename = "stdout";
+    config->write_fileobj = stdout;
+    config->write_all = 0;
 
-    if (argc == 2 || (argc == 3 && strncmp(argv[2], "-", 1) == 0)) {
-        // print to stdout
-        config->write_filename = "stdout";
-        config->write_fileobj = stdout;
-    } else if (argc == 3 && strncmp(argv[2], "-", 1) != 0) {
-        config->write_filename = argv[2];
-        config->write_fileobj = fopen(config->write_filename, "w");
-    } else {
-        print_help(FAILURE);
+    static const char *options = "ao:";
+    int c;
+
+    while ((c = getopt(argc, argv, options)) != -1) {
+        switch (c) {
+            case 'o':
+                config->write_filename = optarg;
+                config->write_fileobj = fopen(config->write_filename, "w");
+                break;
+            case 'a':
+                config->write_all = 1;
+                break;
+        }
     }
 
     if (config->read_fileobj == NULL) {

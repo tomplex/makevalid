@@ -25,16 +25,16 @@ int process(MakeValidConfig *config) {
 
     while (getline(&line, &len, config->read_fileobj) != -1) {
         counter++;
+        wkt = line;
 
-        input_geom = GEOSWKTReader_read(reader, line);
+        input_geom = GEOSWKTReader_read(reader, wkt);
         if (!GEOSisValid(input_geom)) {
             fixed_counter++;
             valid_geom = GEOSMakeValid(input_geom);
-//            wkt = strcat(GEOSWKTWriter_write(writer, valid_geom), "\n");
-            wkt = GEOSWKTWriter_write(writer, valid_geom);
+            wkt = strcat(GEOSWKTWriter_write(writer, valid_geom), "\n");
         }
-        else {
-            wkt = line;
+        else if (!config->write_all) {
+            continue;
         }
         fwrite(wkt, sizeof(char), strlen(wkt), config->write_fileobj);
     }
