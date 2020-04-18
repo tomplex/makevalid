@@ -13,10 +13,8 @@ int process(MakeValidConfig *config) {
     GEOSWKTWriter *writer = GEOSWKTWriter_create();
 
     size_t len = 0;
-
     char *line = NULL;
-    char *wkt;
-
+    char *wkt = NULL;
     int counter = 0;
     int fixed_counter = 0;
 

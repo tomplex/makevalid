@@ -5,7 +5,7 @@
 
 #include "config.h"
 
-void print_help(int exit_code) {
+void print_help() {
     char *usage =
         "Usage: makevalid [OPTIONS] INPUT_FILE\n\n"
         "Read INPUT_FILE and load WKT geometries, and fix any which are invalid. \n"
@@ -14,7 +14,7 @@ void print_help(int exit_code) {
         "\t-o\tspecify output file.\n"
         "\t-a\toutput all geometries, not just those which have been fixed.\n";
     printf("%s", usage);
-    exit(exit_code);
+    exit(SUCCESS);
 }
 
 void print_error(char *msg, int exit_code) {
@@ -25,6 +25,7 @@ void print_error(char *msg, int exit_code) {
 void finish(MakeValidConfig *config) {
     fclose(config->read_fileobj);
     fclose(config->write_fileobj);
+    free(config);
 }
 
 MakeValidConfig *parse_arguments(int argc, char *argv[]) {
