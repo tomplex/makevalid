@@ -30,7 +30,8 @@ int process(MakeValidConfig *config) {
         if (!GEOSisValid(input_geom)) {
             fixed_counter++;
             valid_geom = GEOSMakeValid(input_geom);
-            wkt = strcat(GEOSWKTWriter_write(writer, valid_geom), "\n");
+//            wkt = strcat(GEOSWKTWriter_write(writer, valid_geom), "\n");
+            wkt = GEOSWKTWriter_write(writer, valid_geom);
         }
         else {
             wkt = line;
