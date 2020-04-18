@@ -16,6 +16,8 @@ RUN cd /tmp/ && \
     cd / && \
     rm -rf /tmp/geos*
 
+RUN ldconfig
+
 COPY . /makevalid
 WORKDIR /makevalid
 
