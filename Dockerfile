@@ -3,8 +3,8 @@ FROM debian:buster
 RUN apt update && apt install -y \
     wget \
     build-essential \
-    libtool
-
+    libtool \
+    cmake
 
 RUN cd /tmp/ && \
     wget http://download.osgeo.org/geos/geos-3.8.1.tar.bz2 && \
@@ -17,12 +17,10 @@ RUN cd /tmp/ && \
     rm -rf /tmp/geos*
 
 COPY . /makevalid
+WORKDIR /makevalid
 
 RUN cd /makevalid && \
-    autoconf && \
-    automake --add-missing && \
-    ./configure && \
-    make && \
-    make install
+    cmake . && \
+    make
 
 ENTRYPOINT ["/bin/bash"]
