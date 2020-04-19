@@ -14,27 +14,44 @@ int process(MakeValidConfig *config) {
 
     size_t len = 0;
     char *line = NULL;
-    char *wkt = NULL;
+    char *wkt;
+    char *id;
     int counter = 0;
     int fixed_counter = 0;
+    int valid;
 
     GEOSGeometry *input_geom;
     GEOSGeometry *valid_geom;
 
+    if (config->header == TRUE) {
+        // Skip the header
+        fprintf(stderr, "Skipping header.\n");
+        getline(&line, &len, config->read_fileobj);
+    }
+
     while (getline(&line, &len, config->read_fileobj) != -1) {
         counter++;
-        wkt = line;
+
+        id = strtok(line, config->delimiter);
+        wkt = strtok(NULL, config->delimiter);
 
         input_geom = GEOSWKTReader_read(reader, wkt);
-        if (!GEOSisValid(input_geom)) {
+        valid = GEOSisValid(input_geom);
+
+        if (valid == TRUE && config->write_all == FALSE) {
+            // If it's valid and we don't want to write out all input geometries,
+            // just continue to the next record.
+            continue;
+        } else if (valid == FALSE) {
             fixed_counter++;
             valid_geom = GEOSMakeValid(input_geom);
-            wkt = strcat(GEOSWKTWriter_write(writer, valid_geom), "\n");
+            wkt = GEOSWKTWriter_write(writer, valid_geom);
+            strcat(wkt, "\n");
         }
-        else if (!config->write_all) {
-            continue;
-        }
-        fwrite(wkt, sizeof(char), strlen(wkt), config->write_fileobj);
+
+        fwrite(id, 1, strlen(id), config->write_fileobj);
+        putc('|', config->write_fileobj);
+        fwrite(wkt, 1, strlen(wkt), config->write_fileobj);
     }
     finishGEOS();
 

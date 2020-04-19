@@ -7,4 +7,5 @@ rm -rf \
     CMakeCache.txt \
     Makefile \
     makevalid \
-    makevalid.cbp
+    makevalid.cbp \
+    *.wkt

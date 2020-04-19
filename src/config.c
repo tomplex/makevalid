@@ -9,6 +9,9 @@ void print_help() {
     char *usage =
         "Usage: makevalid [OPTIONS] INPUT_FILE\n\n"
         "Read INPUT_FILE and load WKT geometries, and fix any which are invalid. \n"
+        "INPUT_FILE must be a file with two fields separated by a pipe [|]. The first field\n"
+        "should be an ID, and the second should be the WKT geometry to be made valid. The file should\n"
+        "have no header.\n"
         "By default, output is written to stdout and only changed geometries are written.\n\n"
         "Options:\n"
         "\t-o\tspecify output file.\n"
@@ -32,7 +35,7 @@ MakeValidConfig *parse_arguments(int argc, char *argv[]) {
     MakeValidConfig *config = (MakeValidConfig *) malloc(sizeof(MakeValidConfig));
 
     if (argc <= 1 || strncmp(argv[1], "--help", 6) == 0) {
-        print_help(SUCCESS);
+        print_help();
     }
 
     // default options
@@ -40,9 +43,10 @@ MakeValidConfig *parse_arguments(int argc, char *argv[]) {
     config->read_fileobj = fopen(config->read_filename, "r");
     config->write_filename = "stdout";
     config->write_fileobj = stdout;
-    config->write_all = 0;
+    config->write_all = FALSE;
+    config->delimiter = "|";
 
-    static const char *options = "ao:";
+    static const char *options = "aso:";
     int c;
 
     while ((c = getopt(argc, argv, options)) != -1) {
@@ -51,8 +55,11 @@ MakeValidConfig *parse_arguments(int argc, char *argv[]) {
                 config->write_filename = optarg;
                 config->write_fileobj = fopen(config->write_filename, "w");
                 break;
+            case 's':
+                config->header = TRUE;
+                break;
             case 'a':
-                config->write_all = 1;
+                config->write_all = TRUE;
                 break;
         }
     }
