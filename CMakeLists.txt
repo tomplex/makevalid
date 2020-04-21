@@ -54,11 +54,11 @@ if (GEOS_CONFIG)
     execute_process(COMMAND ${GEOS_CONFIG}/geos-config --version OUTPUT_VARIABLE GEOS_VERSION)
     message(STATUS "GEOS Version: ${GEOS_VERSION}")
 else (GEOS_CONFIG)
-    message(ERROR "Could not find geos-config to check version")
+    message(FATAL_ERROR "Could not find geos-config to check version")
 endif(GEOS_CONFIG)
 
 if (GEOS_VERSION STRLESS_EQUAL 3.8)
-    message(ERROR "Makevalid requires GEOS >= 3.8")
+    message(FATAL_ERROR "Makevalid requires GEOS >= 3.8")
 endif(GEOS_VERSION STRLESS_EQUAL 3.8)
 
 target_link_libraries(makevalid ${GEOS_C_LIB})
