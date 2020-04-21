@@ -10,69 +10,56 @@ add_executable(
         src/config.c
         src/config.h)
 
+if (GEOS_DIR)
+    message(STATUS "Trying user-specified GEOS installation at ${GEOS_DIR}")
+    find_path(GEOS_INCLUDE_DIR geos_c.h
+            PATHS ${GEOS_DIR}/include
+            NO_DEFAULT_PATH)
+    find_library(GEOS_C_LIB geos_c
+            PATHS ${GEOS_DIR}/lib
+            NO_DEFAULT_PATH)
+    find_path(GEOS_CONFIG geos-config
+            PATHS ${GEOS_DIR}/bin
+            NO_DEFAULT_PATH)
+else(GEOS_DIR)
+    find_path(GEOS_INCLUDE_DIR geos_c.h
+            PATHS
+            ${CMAKE_INSTALL_PREFIX}/include
+            /usr/include
+            /usr/local/include)
+    find_library(GEOS_C_LIB NAMES geos_c
+            PATHS
+            ${CMAKE_INSTALL_PREFIX}/lib
+            /usr/lib64
+            /usr/lib
+            /usr/local/lib)
+    find_path(GEOS_CONFIG geos-config
+            PATHS
+            /usr/bin
+            /usr/local/bin)
+endif(GEOS_DIR)
 
-# Many thanks to
-# https://github.com/valhalla/valhalla/blob/master/cmake/FindGEOS.cmake
-find_path( GEOS_INCLUDE_DIR geos/geom/Geometry.h
-        PATHS
-        ${CMAKE_INSTALL_PREFIX}/include
-        ${GEOS_DIR}/include
-        /usr/include
-        /usr/local/include
-        /usr/local/ossim/include )
+if( GEOS_C_LIB AND GEOS_INCLUDE_DIR )
+    message( STATUS "Found GEOS..." )
+else( GEOS_C_LIB AND GEOS_INCLUDE_DIR )
+    message( ERROR "Could not find GEOS" )
+endif( GEOS_C_LIB AND GEOS_INCLUDE_DIR )
 
-# Find GEOS library:
-find_library( GEOS_LIB NAMES geos
-        PATHS
-        ${CMAKE_INSTALL_PREFIX}/lib
-        ${GEOS_DIR}/lib
-        /usr/lib64
-        /usr/lib
-        /usr/local/lib
-        /usr/local/ossim/lib )
+message( STATUS "GEOS_INCLUDE_DIR=${GEOS_INCLUDE_DIR}" )
+message( STATUS "GEOS_LIBRARY=${GEOS_C_LIB}" )
 
-# Find GEOS C library:
-find_library( GEOS_C_LIB NAMES geos_c
-        PATHS
-        ${CMAKE_INSTALL_PREFIX}/lib
-        ${GEOS_DIR}/lib
-        /usr/lib64
-        /usr/lib
-        /usr/local/lib
-        /usr/local/ossim/lib )
+# Check GEOS version to ensure >= 3.8
+if (GEOS_CONFIG)
+    message(STATUS "Found geos-config at ${GEOS_CONFIG}")
+    execute_process(COMMAND ${GEOS_CONFIG}/geos-config --version OUTPUT_VARIABLE GEOS_VERSION)
+    message(STATUS "GEOS Version: ${GEOS_VERSION}")
+else (GEOS_CONFIG)
+    message(ERROR "Could not find geos-config to check version")
+endif(GEOS_CONFIG)
 
-# Set the GEOS_LIBRARY:
-if( GEOS_LIB AND GEOS_C_LIB )
-    set( GEOS_LIBRARY ${GEOS_LIB} ${GEOS_C_LIB} CACHE STRING INTERNAL )
-endif(GEOS_LIB AND GEOS_C_LIB )
-
-#---
-# This function sets GEOS_FOUND if variables are valid.
-#---
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args( GEOS DEFAULT_MSG
-        GEOS_LIBRARY
-        GEOS_INCLUDE_DIR )
-
-add_library(GEOS::GEOS INTERFACE IMPORTED)
-if( GEOS_FOUND )
-    if( NOT GEOS_FIND_QUIETLY )
-        message( STATUS "Found GEOS..." )
-    endif( NOT GEOS_FIND_QUIETLY )
-
-    set_target_properties(GEOS::GEOS PROPERTIES
-            INTERFACE_LINK_LIBRARIES "${GEOS_LIBRARY}"
-            INTERFACE_INCLUDE_DIRECTORIES "${GEOS_INCLUDE_DIR}")
-else( GEOS_FOUND )
-    if( NOT GEOS_FIND_QUIETLY )
-        message( WARNING "Could not find GEOS" )
-    endif( NOT GEOS_FIND_QUIETLY )
-endif( GEOS_FOUND )
-
-if( NOT GEOS_FIND_QUIETLY )
-    message( STATUS "GEOS_INCLUDE_DIR=${GEOS_INCLUDE_DIR}" )
-    message( STATUS "GEOS_LIBRARY=${GEOS_LIBRARY}" )
-endif( NOT GEOS_FIND_QUIETLY )
+if (GEOS_VERSION STRLESS_EQUAL 3.8)
+    message(ERROR "Makevalid requires GEOS >= 3.8")
+endif(GEOS_VERSION STRLESS_EQUAL 3.8)
 
 target_link_libraries(makevalid ${GEOS_C_LIB})
 target_include_directories(makevalid PUBLIC ${GEOS_INCLUDE_DIR})
