@@ -26,6 +26,9 @@ Options:
 By default, only geometries which are altered (made valid) will be written. To write them all instead, use `-a`.
 If your file has a header, you can use `-s` to skip the first line. The header will not be written to the output file. 
 
+`makevalid` will write the number of geometries processed and the number fixed to stderr when the program is complete.
+To silence it, use `-q`.
+
 ## build and install
 
 Requires GEOS >= 3.8 & `cmake` >= 3.13. The standard system locations

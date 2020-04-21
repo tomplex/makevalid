@@ -6,7 +6,7 @@
 #include "config.h"
 
 
-int process(MakeValidConfig *config) {
+int process(makevalidconfig_t *config) {
     initGEOS(NULL, NULL);
 
     GEOSWKTReader *reader = GEOSWKTReader_create();
@@ -55,14 +55,16 @@ int process(MakeValidConfig *config) {
     }
     finishGEOS();
 
-    fprintf(stderr, "Processed %d lines.\n", counter);
-    fprintf(stderr, "Fixed %d geometries.\n", fixed_counter);
+    if (!config->quiet) {
+        fprintf(stderr, "Processed %d lines.\n", counter);
+        fprintf(stderr, "Fixed %d geometries.\n", fixed_counter);
+    }
 
     return 0;
 }
 
 int main(int argc, char *argv[]) {
-    MakeValidConfig *config = parse_arguments(argc, argv);
+    makevalidconfig_t *config = parse_arguments(argc, argv);
 
     int status = process(config);
 
