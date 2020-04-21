@@ -9,3 +9,4 @@ Makefile
 
 makevalid
 makevalid.cbp
+*.wkt
