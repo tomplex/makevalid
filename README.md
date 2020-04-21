@@ -12,8 +12,7 @@ cd makevalid
 
 # optionally specify location of GEOS library.
 # /usr/ and /usr/local will be searched by default.
-export GEOS_DIR=/usr/local/geos/3.8.1/
-cmake . && make
+cmake -DGEOS_DIR=/usr/local/geos/3.8.1/ . && make
 ```
 
 This will create an executable called `makevalid` in your local directory. 
