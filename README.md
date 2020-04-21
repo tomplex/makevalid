@@ -2,6 +2,30 @@
 
 Simple tool to "makevalid" files containing WKT geometries.
 
+
+## usage
+
+`makevalid` is a simple command-line tool which reads an input file containing two fields: an ID and a WKT geometry. 
+The fields should be pipe-delimited. 
+
+```bash
+./makevalid --help  # print help info
+Usage: makevalid [OPTIONS] INPUT_FILE
+
+Read INPUT_FILE and load WKT geometries, and fix any which are invalid.
+INPUT_FILE must be a file with two fields separated by a pipe [|]. The first field should be an ID, and the second should be the WKT geometry to be made valid. The file should have no header.
+By default, output is written to stdout and only changed geometries are written.
+
+Options:
+	-o	specify output file.
+	-a	output all geometries, not just those which have been fixed.
+	-s	skip the first line of the file (a header).
+```
+
+`makevalid` will print to stdout by default. You can use the `-o FILENAME` option to specify an output file to write to, instead.
+By default, only geometries which are altered (made valid) will be written. To write them all instead, use `-a`.
+If your file has a header, you can use `-s` to skip the first line. The header will not be written to the output file. 
+
 ## build and install
 
 Requires GEOS >= 3.8 & `cmake` >= 3.13. The standard system locations
