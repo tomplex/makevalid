@@ -9,13 +9,14 @@ void print_help() {
     char *usage =
         "Usage: makevalid [OPTIONS] INPUT_FILE\n\n"
         "Read INPUT_FILE and load WKT geometries, and fix any which are invalid. \n"
-        "INPUT_FILE must be a file with two fields separated by a pipe [|]. The first field\n"
-        "should be an ID, and the second should be the WKT geometry to be made valid. The file should\n"
+        "INPUT_FILE must be a file with two fields separated by a pipe [|]. The first field "
+        "should be an ID, and the second should be the WKT geometry to be made valid. The file should "
         "have no header.\n"
         "By default, output is written to stdout and only changed geometries are written.\n\n"
         "Options:\n"
         "\t-o\tspecify output file.\n"
-        "\t-a\toutput all geometries, not just those which have been fixed.\n";
+        "\t-a\toutput all geometries, not just those which have been fixed.\n"
+        "\t-s\tskip the first line of the file (a header).\n";
     printf("%s", usage);
     exit(SUCCESS);
 }
