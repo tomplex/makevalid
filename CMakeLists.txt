@@ -42,7 +42,7 @@ endif(GEOS_DIR)
 if( GEOS_C_LIB AND GEOS_INCLUDE_DIR )
     message( STATUS "Found GEOS..." )
 else( GEOS_C_LIB AND GEOS_INCLUDE_DIR )
-    message( ERROR "Could not find GEOS" )
+    message( FATAL_ERROR "Could not find GEOS" )
 endif( GEOS_C_LIB AND GEOS_INCLUDE_DIR )
 
 message( STATUS "GEOS_INCLUDE_DIR=${GEOS_INCLUDE_DIR}" )
